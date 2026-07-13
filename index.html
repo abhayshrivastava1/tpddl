@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TPDDL Prep Checklist</title>
+<style>
+  :root{
+    --bg:#0f1418;
+    --panel:#161d23;
+    --panel-border:#26323b;
+    --ink:#e8edf1;
+    --muted:#8fa3ad;
+    --accent:#ffb454;
+    --accent2:#5ec6c2;
+    --done:#4caf7d;
+    --mono: 'JetBrains Mono','Courier New',monospace;
+    --sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0) 200px),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+    padding-bottom:80px;
+  }
+  header{
+    padding:38px 24px 22px;
+    border-bottom:1px solid var(--panel-border);
+    background:
+      repeating-linear-gradient(0deg, rgba(94,198,194,0.04) 0px, rgba(94,198,194,0.04) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, rgba(94,198,194,0.04) 0px, rgba(94,198,194,0.04) 1px, transparent 1px, transparent 32px);
+    position:sticky;
+    top:0;
+    z-index:20;
+    backdrop-filter: blur(6px);
+  }
+  header .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--accent2);
+    text-transform:uppercase;
+  }
+  header h1{
+    margin:6px 0 4px;
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:-0.3px;
+  }
+  header p.sub{
+    margin:0 0 16px;
+    color:var(--muted);
+    font-size:14px;
+    max-width:640px;
+  }
+  .progress-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    max-width:640px;
+  }
+  .progress-track{
+    flex:1;
+    height:10px;
+    background:#1e2830;
+    border-radius:6px;
+    overflow:hidden;
+    border:1px solid var(--panel-border);
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent2), var(--done));
+    transition:width .3s ease;
+  }
+  #progress-label{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  main{
+    max-width:880px;
+    margin:0 auto;
+    padding:24px;
+  }
+  .toc{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:8px;
+    margin-bottom:30px;
+  }
+  .toc a{
+    display:block;
+    padding:10px 12px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:12.5px;
+    font-family:var(--mono);
+    transition:.15s;
+  }
+  .toc a:hover{border-color:var(--accent2); color:var(--ink);}
+
+  .section{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:12px;
+    margin-bottom:18px;
+    overflow:hidden;
+    scroll-margin-top:150px;
+  }
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .section-head:hover{background:rgba(255,255,255,0.02);}
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .tag{
+    font-family:var(--mono);
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:5px;
+    border:1px solid var(--panel-border);
+    color:var(--muted);
+  }
+  .tag.must{color:#ff8080; border-color:#5a2f2f;}
+  .tag.imp{color:var(--accent); border-color:#5a4a2f;}
+  .tag.good{color:var(--accent2); border-color:#2f5a56;}
+  h2.stitle{
+    font-size:17px;
+    margin:0;
+  }
+  .count{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+  }
+  .chevron{
+    color:var(--muted);
+    transition:transform .2s;
+  }
+  .section.open .chevron{transform:rotate(90deg);}
+  .section-body{
+    display:none;
+    padding:0 20px 20px;
+    border-top:1px solid var(--panel-border);
+  }
+  .section.open .section-body{display:block;}
+
+  .item{
+    display:flex;
+    gap:12px;
+    padding:14px 0;
+    border-bottom:1px dashed var(--panel-border);
+  }
+  .item:last-child{border-bottom:none;}
+  .item input[type=checkbox]{
+    margin-top:4px;
+    width:18px;
+    height:18px;
+    accent-color:var(--done);
+    flex-shrink:0;
+    cursor:pointer;
+  }
+  .item label{
+    cursor:pointer;
+  }
+  .item.checked .item-title{
+    color:var(--done);
+    text-decoration:line-through;
+    text-decoration-color:rgba(76,175,125,0.5);
+  }
+  .item.checked .item-body{opacity:.55;}
+  .item-title{
+    font-weight:600;
+    margin:0 0 4px;
+    font-size:15px;
+  }
+  .item-body{
+    color:#c4d0d6;
+    font-size:14px;
+  }
+  .item-body p{margin:6px 0;}
+  .item-body ul{margin:6px 0; padding-left:20px;}
+  .item-body li{margin:3px 0;}
+  .item-body strong{color:var(--ink);}
+  code, .kv{
+    font-family:var(--mono);
+    background:#1e2830;
+    padding:1px 6px;
+    border-radius:4px;
+    font-size:13px;
+    color:var(--accent2);
+  }
+  table.terms{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13.5px;
+  }
+  table.terms td, table.terms th{
+    border:1px solid var(--panel-border);
+    padding:7px 10px;
+    text-align:left;
+  }
+  table.terms th{color:var(--accent2); font-family:var(--mono); font-size:12px;}
+
+  .resource-box{
+    margin-top:14px;
+    padding:14px 16px;
+    background:#111820;
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    border-left:3px solid var(--accent2);
+  }
+  .resource-box h4{
+    margin:0 0 8px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--accent2);
+    font-family:var(--mono);
+  }
+  .resource-box ul{margin:0; padding-left:18px; font-size:14px;}
+  .resource-box li{margin:5px 0;}
+  .resource-box a{color:var(--accent); text-decoration:none;}
+  .resource-box a:hover{text-decoration:underline;}
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    padding:30px 20px 10px;
+    font-family:var(--mono);
+  }
+
+  .reset-btn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    color:var(--muted);
+    padding:10px 16px;
+    border-radius:30px;
+    font-family:var(--mono);
+    font-size:12px;
+    cursor:pointer;
+    z-index:30;
+  }
+  .reset-btn:hover{border-color:var(--accent); color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">DISCOM · TECHNICAL TEAM PREP</div>
+  <h1>TPDDL Joining Checklist</h1>
+  <p class="sub">Har topic ke andar detailed notes + resources hain. Padhne ke baad checkbox tick karo — progress upar track hoga.</p>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div id="progress-label">0 / 0 done</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="toc">
+    <a href="#safety">1. Safety</a>
+    <a href="#transformers">2. Transformers</a>
+    <a href="#switchgear">3. Switchgear &amp; Protection</a>
+    <a href="#cables">4. Cables &amp; Earthing</a>
+    <a href="#autoequip">5. Distribution Automation</a>
+    <a href="#protocols">6. Comm. Protocols</a>
+    <a href="#scada">7. SCADA</a>
+    <a href="#gis">8. GIS</a>
+    <a href="#smartgrid">9. Smart Grid (DMS+OMS)</a>
+    <a href="#ami">10. Smart Metering / AMI</a>
+    <a href="#extras">11. Extra Topics</a>
+    <a href="#terms">12. Terminology</a>
+  </div>
+
+  <!-- TRANSFORMERS -->
+  <section class="section open" id="safety">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">1. Safety</h2>
+        <span class="tag must">MUST KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="sf1"><label for="sf1">
+        <p class="item-title">PPE (Personal Protective Equipment)</p>
+        <div class="item-body">
+          <ul>
+            <li>Rubber hand gloves (specific voltage rating ke hisaab se — HT ke liye alag rating)</li>
+            <li>Safety helmet, safety shoes (insulated sole)</li>
+            <li>Face shield (arc flash protection, switching operations ke waqt)</li>
+            <li>Rubber mat (equipment ke paas kaam karte hain, floor insulation ke liye)</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sf2"><label for="sf2">
+        <p class="item-title">Permit to Work (PTW) System</p>
+        <div class="item-body">
+          <p>Ek formal, documented process hai jisse pehle confirm kiya jaata hai ki equipment safely shutdown ho chuka hai, phir hi maintenance team ko kaam karne diya jaata hai.</p>
+          <ol>
+            <li>Equipment ko de-energize karna (breaker open, isolator open)</li>
+            <li>Earthing lagana (Earth switches/portable earths)</li>
+            <li>Formal Permit issue karna (kaunsa equipment, kya kaam, kitni der)</li>
+            <li>Kaam complete hone ke baad, permit "cancel" karke hi equipment wapas energize kiya jaata hai</li>
+          </ol>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sf3"><label for="sf3">
+        <p class="item-title">LOTO (Lockout-Tagout)</p>
+        <div class="item-body">
+          <p>Ek physical safety mechanism — jab equipment shutdown karte hain maintenance ke liye, us switch/breaker pe ek physical lock laga dete hain (koi accidentally energize na kar sake) aur ek tag lagate hain (kisne, kyun). Jab tak wahi person lock nahi kholta, koi doosra equipment energize nahi kar sakta. Multiple workers ho toh sabka apna lock (multi-lock hasp) — sabke lock hatne ke baad hi equipment energize hoga.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sf4"><label for="sf4">
+        <p class="item-title">Safe Distance Rules</p>
+        <div class="item-body">
+          <p>HT/EHV lines ke paas kaam karte waqt minimum safe distance maintain karni hoti hai (voltage level ke hisaab se badhti hai) — company ke safety manual mein specific numbers ke saath diya hota hai, training mein exact figures sikhaye jaayenge.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sf5"><label for="sf5">
+        <p class="item-title">Interview approach — safety sequence</p>
+        <div class="item-body">
+          <p>"Agar tumhe field mein bhejein aur equipment pe kaam karna ho, tum kya steps follow karoge?" — Answer: Pehle PTW lena, phir isolator/breaker open karna, phir earthing lagana, phir LOTO lagana, tab jaake kaam start karna. Ye sequence clearly pata honi chahiye.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>YouTube: "Permit to work system electrical", "LOTO lockout tagout procedure", "Electrical safety substation"</li>
+          <li>TPDDL apni induction training mein detail se sikhayega bhi — sirf concept clarity abhi kaafi hai</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="transformers">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">2. Transformers</h2>
+        <span class="tag must">MUST KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="t1"><label for="t1">
+        <p class="item-title">Basic Working Principle</p>
+        <div class="item-body">
+          <p>Transformer do coils (primary aur secondary) ke beech mutual induction se kaam karta hai. Primary coil mein AC current jaata hai, ye ek changing magnetic flux banata hai core (iron) mein, aur ye changing flux secondary coil mein voltage induce karta hai. Koi direct electrical connection nahi hota primary aur secondary ke beech — sirf magnetic coupling hoti hai. Isi wajah se transformer voltage level change kar pata hai (step-up ya step-down) bina current ko directly transfer kiye.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t2"><label for="t2">
+        <p class="item-title">Turns Ratio Concept</p>
+        <div class="item-body">
+          <p>Voltage ratio = Turns ratio. Agar primary mein 1000 turns hain aur secondary mein 100, toh voltage 10 guna kam hoga secondary side pe (step-down), lekin current 10 guna zyada hoga (kyunki Power = V×I, aur ideal transformer mein power conserve rehti hai, sirf voltage-current trade-off hota hai).</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t3"><label for="t3">
+        <p class="item-title">Types jo TPDDL mein use hote hain</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Power Transformer</strong> — high voltage transmission ke liye (grid substation level, jaise 220kV/66kV, 66kV/33kV)</li>
+            <li><strong>Distribution Transformer (DT)</strong> — ye wahi transformer hai jo tumhari colony mein pole pe ya ground-mounted box mein dikhta hai. Ye 11kV ko 415V (three-phase) mein convert karta hai jo directly ghar tak jaata hai</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t4"><label for="t4">
+        <p class="item-title">Losses (Copper &amp; Iron) — interview mein direct poochha jaata hai</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Copper Loss (I²R loss):</strong> Winding ke resistance ki wajah se hoti hai, load ke saath badhti hai (variable loss)</li>
+            <li><strong>Iron Loss / Core Loss:</strong> Do parts — Hysteresis loss (core material magnetize-demagnetize hone se) aur Eddy Current loss (core mein induced circulating currents se). Ye load pe depend nahi karti, transformer energized hote hi hoti hai (constant loss)</li>
+          </ul>
+          <p><strong>Interview trick question:</strong> "Transformer no-load pe bhi loss karta hai kya?" — Haan, iron loss hamesha hoti hai jab tak transformer energized hai, chahe load ho ya na ho.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t5"><label for="t5">
+        <p class="item-title">OC Test (Open Circuit Test)</p>
+        <div class="item-body">
+          <p>Secondary ko open rakhke primary pe rated voltage diya jaata hai. Isse <strong>iron loss</strong> measure hota hai, kyunki current bahut kam hoga (no-load current), toh copper loss negligible hoga.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t6"><label for="t6">
+        <p class="item-title">SC Test (Short Circuit Test)</p>
+        <div class="item-body">
+          <p>Secondary ko short-circuit karke primary pe thoda sa reduced voltage diya jaata hai jisse rated current flow ho. Isse <strong>copper loss</strong> measure hota hai, kyunki voltage kam hai toh iron loss negligible hoga.</p>
+          <p>Ye dono tests real substation mein transformer ki health check karne, aur efficiency/impedance calculate karne ke liye use hote hain.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t7"><label for="t7">
+        <p class="item-title">Tap Changer</p>
+        <div class="item-body">
+          <p>Transformer ke primary/secondary winding ke turns ko slightly adjust karne ka mechanism, taaki output voltage ko fine-tune kiya ja sake (grid voltage fluctuations ko handle karne ke liye). Do types:</p>
+          <ul>
+            <li><strong>Off-load tap changer</strong> — transformer ko band karke tap change karna padta hai</li>
+            <li><strong>On-load tap changer (OLTC)</strong> — bina transformer band kiye, live condition mein tap change ho sakta hai (bade power transformers mein use hota hai, taaki continuous supply na tootee)</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t8"><label for="t8">
+        <p class="item-title">Vector Group (jaise Dyn11)</p>
+        <div class="item-body">
+          <p>Ye batata hai transformer ke primary aur secondary windings kaise connect hain (Delta ya Star) aur unke beech phase angle difference kya hai. "Dyn11" ka matlab: Primary Delta (D), Secondary Star with neutral (yn), aur secondary, primary se 30° phase lag/lead karta hai (11 = 11×30° = 330°, ya practically 30° lead depending on convention).</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="t9"><label for="t9">
+        <p class="item-title">Parallel Operation of Transformers</p>
+        <div class="item-body">
+          <p>Do transformers ko parallel mein chalane ke liye ye conditions match honi chahiye:</p>
+          <ul>
+            <li>Same voltage ratio (turns ratio)</li>
+            <li>Same vector group (phase relationship match hona chahiye, warna circulating current bahut zyada ho jayegi aur transformer damage ho sakta hai)</li>
+            <li>Same percentage impedance (warna load share unequal hoga)</li>
+            <li>Same phase sequence</li>
+          </ul>
+          <p>Ye concept discom mein bahut real hai — jab do transformers ek hi bus pe parallel chalane hote hain (load baant ke liye), inhi conditions ko check karte hain.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>College Power System textbook — Transformer chapter revise karo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="switchgear">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">3. Switchgear &amp; Protection</h2>
+        <span class="tag must">MUST KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="sw1"><label for="sw1">
+        <p class="item-title">Switchgear kya hai</p>
+        <div class="item-body">
+          <p>Switchgear un sabhi devices ka collective naam hai jo circuit ko <strong>switch, protect, aur isolate</strong> karte hain — breakers, isolators, fuses, relays sab iske andar aate hain.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sw2"><label for="sw2">
+        <p class="item-title">Circuit Breaker Types</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>ACB (Air Circuit Breaker):</strong> Air ko medium use karta hai arc quench karne ke liye. Low voltage (LT side, 415V) applications mein common — main LT panel mein.</li>
+            <li><strong>VCB (Vacuum Circuit Breaker):</strong> Vacuum bottle ke andar contacts. Arc bahut jaldi extinguish ho jaata hai. 11kV/33kV (medium voltage) mein sabse zyada use — TPDDL substations mein common.</li>
+            <li><strong>SF6 Circuit Breaker:</strong> SF6 gas — acha insulating aur arc-quenching medium. Higher voltage levels (66kV, 220kV) mein use hota hai.</li>
+          </ul>
+          <p><strong>Interview trick question:</strong> "VCB aur SF6 mein farak?" — VCB medium voltage (11-33kV) ke liye compact aur maintenance-free hai, SF6 zyada higher voltage aur higher fault current interrupt karne ke liye.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sw3"><label for="sw3">
+        <p class="item-title">Isolator vs Circuit Breaker</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Isolator:</strong> Sirf <strong>no-load</strong> condition mein operate hota hai. Iska kaam guaranteed physical gap dena hai, taaki maintenance ke waqt confidence ho circuit truly disconnected hai.</li>
+            <li><strong>Circuit Breaker:</strong> Load current ke saath bhi operate kar sakta hai, aur fault current bhi safely interrupt kar sakta hai (arc quenching mechanism).</li>
+          </ul>
+          <p><strong>Sequence yaad rakho (common interview question):</strong> Circuit off karne ke liye pehle breaker kholte hain (load current safely break), phir isolator kholte hain (visual gap). Band karte waqt ulta.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sw4"><label for="sw4">
+        <p class="item-title">Relay Types</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Overcurrent Relay:</strong> Current set value se zyada ho jaaye toh trip signal deta hai. Simplest aur most common.</li>
+            <li><strong>Earth Fault Relay:</strong> Earth faults detect karta hai — normal current balance mein imbalance dekhta hai.</li>
+            <li><strong>Differential Protection:</strong> Do measurement points ke current compare karta hai — barabar nahi hain toh turant trip. Transformers aur important equipment ke liye.</li>
+            <li><strong>Distance Protection:</strong> Transmission lines mein use hoti hai, impedance measure karke fault distance estimate karta hai.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sw5"><label for="sw5">
+        <p class="item-title">CT (Current Transformer) &amp; PT (Potential Transformer)</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>CT:</strong> High current (jaise 1000A) ko chhoti, safe, standard value (1A ya 5A) mein step-down karta hai relays/meters ke liye.</li>
+            <li><strong>PT:</strong> High voltage ko chhoti, safe value (jaise 110V) mein step-down karta hai measurement ke liye.</li>
+          </ul>
+          <p>Dono ka ratio hota hai (jaise CT ratio 1000/5) — actual reading calculate karne ke liye use hota hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sw6"><label for="sw6">
+        <p class="item-title">Relay Coordination/Grading</p>
+        <div class="item-body">
+          <p>Jab network mein multiple relays hote hain (upstream-downstream), unki settings (time delay, current setting) is tarah set ki jaati hain ki sirf faulty section ka nearest breaker trip kare, upstream wale nahi. Time-graded (delay increase) ya current-graded (threshold alag) dono tarah se ho sakta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>YouTube: "Circuit breaker types explained", "CT PT working principle", "Relay coordination basics"</li>
+          <li>College textbook: "Switchgear and Protection" by Sunil S. Rao (standard Indian textbook)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cables">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">4. Cables &amp; Earthing</h2>
+        <span class="tag must">MUST KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="c1"><label for="c1">
+        <p class="item-title">HT vs LT Cables</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>LT Cables (Low Tension):</strong> 415V/230V ke liye, generally XLPE (Cross-Linked Polyethylene) insulated, aluminium ya copper conductor</li>
+            <li><strong>HT Cables (High Tension):</strong> 11kV/33kV ke liye, zyada moti insulation layer, usually 3-core XLPE cables underground distribution mein use hote hain (Delhi jaisi urban area mein zyada tar underground cables hi hain, overhead kam)</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="c2"><label for="c2">
+        <p class="item-title">Cable Construction (layers, andar se bahar tak)</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Conductor</strong> (Cu/Al) — current carry karta hai</li>
+            <li><strong>Conductor Screen</strong> — semi-conducting layer, electric field ko smooth karta hai</li>
+            <li><strong>Insulation (XLPE)</strong> — main insulating layer</li>
+            <li><strong>Insulation Screen</strong> — phir se semi-conducting layer</li>
+            <li><strong>Metallic Screen/Armour</strong> — mechanical protection + fault current path + earthing</li>
+            <li><strong>Outer Sheath</strong> — PVC, weather/mechanical protection</li>
+          </ul>
+          <p>Interview mein poochh sakte hain: "Cable mein screen kyun hoti hai?" — Screen electric field ko uniform banati hai aur stress concentration rokti hai jo warna insulation breakdown kar sakti hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="c3"><label for="c3">
+        <p class="item-title">Common Cable Faults</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Open Circuit Fault</strong> — conductor cut ho gaya</li>
+            <li><strong>Short Circuit Fault</strong> — conductor-to-conductor touch</li>
+            <li><strong>Earth Fault</strong> — conductor ka earth/sheath se contact</li>
+          </ul>
+          <p>Fault location ke liye <strong>Cable Fault Locator</strong> use hota hai — pehle approximate location (Time Domain Reflectometry/TDR method) phir precise location (surge/acoustic method) se pinpoint karte hain.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="c4"><label for="c4">
+        <p class="item-title">Cable Jointing</p>
+        <div class="item-body">
+          <p>Jab cable damage hoti hai ya do cables connect karni hoti hain, <strong>Cable Joint</strong> banaya jaata hai — ye ek critical, skill-heavy kaam hai kyunki joint hi sabse weak point hota hai fault hone ke liye. Heat-shrink joints aur cold-shrink joints common types hain.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="c5"><label for="c5">
+        <p class="item-title">Megger Test (Insulation Resistance Test) — बहुत common poocha jaata hai</p>
+        <div class="item-body">
+          <p>Megger ek instrument hai jo cable/equipment ki insulation resistance measure karta hai (Mega-ohms mein) — high DC voltage (500V, 1000V, 5000V depending on equipment) apply karke leakage current dekhta hai.</p>
+          <ul>
+            <li><strong>Kyun zaroori hai:</strong> Agar insulation resistance kam hai, matlab insulation weak ho gayi hai (moisture, ageing, damage) aur fault hone ka risk hai</li>
+            <li><strong>Kab karte hain:</strong> Naya cable install karne ke baad, periodic maintenance mein, fault ke baad restoration se pehle</li>
+            <li>Rule of thumb: Higher megger reading = better insulation health</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="c6"><label for="c6">
+        <p class="item-title">Earthing Systems</p>
+        <div class="item-body">
+          <p>Earthing ka matlab hai equipment ke non-current-carrying metal parts (jaise transformer body, panel body) ko zameen se connect karna.</p>
+          <p><strong>Kyun zaroori hai:</strong></p>
+          <ul>
+            <li>Safety — agar insulation fail ho aur body pe voltage aa jaye, earthing us fault current ko safely zameen mein bhej degi instead of current insaan ke through jaane ke</li>
+            <li>Protection devices ko trigger karna — earth fault relay tabhi kaam karega jab proper earth path ho</li>
+            <li>Voltage stabilization — system ka reference point set karna</li>
+          </ul>
+          <p><strong>Types of Earthing:</strong></p>
+          <ul>
+            <li><strong>Plate Earthing</strong> — metal plate zameen mein gaadi jaati hai</li>
+            <li><strong>Pipe Earthing</strong> — GI pipe zameen mein gaadi jaati hai (zyada common, easy maintenance)</li>
+            <li><strong>Neutral Earthing</strong> — transformer ke star point ko earth karna (system earthing ke liye)</li>
+          </ul>
+          <p><strong>Earth Resistance</strong> — jitna kam ho utna acha (typically &lt;5 ohm target rakha jaata hai substations mein). Earth tester instrument se measure hota hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>College notes revise karo — Cables &amp; Earthing undergrad chapters</li>
+          <li>YouTube: "Megger test insulation resistance", "Earthing types explained"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="autoequip">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">5. Distribution Automation Equipment</h2>
+        <span class="tag must">MUST KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="d1"><label for="d1">
+        <p class="item-title">Ring Main System vs Radial System</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Radial System:</strong> Substation se ek hi direction mein feeder jaata hai, jaise ek tree branch. Simple hai lekin problem ye hai — agar beech mein fault aaye, toh us point ke aage ka poora area bina supply ke reh jaata hai jab tak fault fix na ho.</li>
+            <li><strong>Ring Main System:</strong> Feeder ek loop/ring banata hai — dono ends substation se connected hote hain. Agar kahin fault aaye, us section ko isolate karke baaki poore ring ko dono directions se supply mil sakti hai. Ye reliability ke liye bahut better hai, aur TPDDL jaisa urban discom mostly isi system pe chalta hai.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="d2"><label for="d2">
+        <p class="item-title">RMU (Ring Main Unit)</p>
+        <div class="item-body">
+          <p>Ye ek compact switchgear unit hai jo ring main system mein use hoti hai. Ismein typically 3 switches hote hain — do incoming/outgoing ring connections ke liye (isolators/load break switches) aur ek transformer ko feed karne ke liye (jisme fuse ya circuit breaker hota hai). RMU ko street pe ya building ke ground floor pe compact cabinet mein laga dete hain — ye underground cable network ke liye perfect hai kyunki compact aur maintenance-friendly hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="d3"><label for="d3">
+        <p class="item-title">LILO (Line In Line Out)</p>
+        <div class="item-body">
+          <p>Jab ek existing feeder line se ek naya connection/branch nikalna ho bina poori line ko disturb kiye, tab LILO technique use hoti hai — line ko "cut" karke, us point pe naya RMU ya switching point insert karte hain, aur line continue hoti hai aage. Isse network expand hota hai without redesigning poora feeder.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="d4"><label for="d4">
+        <p class="item-title">Sectionalizer</p>
+        <div class="item-body">
+          <p>Ye ek automatic switching device hai jo feeder ko chhote sections mein divide karta hai. Jab fault hota hai, upstream breaker trip karta hai (poori line ka supply chala jaata hai temporarily), sectionalizer is dauraan "count" karta hai ki fault current guzra — aur jab line dobara energize hoti hai (recloser se), sectionalizer us specific faulty section ko isolate kar deta hai automatically, taaki baaki healthy sections pe supply restore ho sake bina manual intervention ke.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="d5"><label for="d5">
+        <p class="item-title">Auto-Recloser</p>
+        <div class="item-body">
+          <p>Ye ek smart circuit breaker hai jo fault detect hone pe automatically trip karta hai, phir thodi der baad (kuch second) automatically dobara close (reclose) karne ki koshish karta hai. Wajah: zyadatar overhead line faults <strong>temporary</strong> hote hain (jaise bird touch, tree branch, lightning) — ye khud clear ho jaate hain. Agar reclose ke baad fault clear ho gaya, supply normal ho jaati hai automatically bina kisi manual restoration ke. Agar fault permanent hai, recloser 2-3 attempts ke baad permanently trip ho jaata hai (lockout) aur tab manual restoration chahiye hoti hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="d6"><label for="d6">
+        <p class="item-title">Ye sab kaise saath mein kaam karte hain (real scenario)</p>
+        <div class="item-body">
+          <p>Fault hota hai feeder pe → Recloser trip karta hai → Automatic reclose attempt → Agar fault permanent hai → Sectionalizer us faulty section ko isolate karta hai → Baaki healthy sections ko ring ke doosre end se ya recloser se supply mil jaati hai → Sirf chhota faulty section bina supply ke rehta hai jab tak repair team na pahunche.</p>
+          <p>Ye poora automation hi <strong>DA (Distribution Automation)</strong> ka core concept hai — jitna kam manual intervention, utni fast restoration, utne kam customers affected.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>YouTube: "Ring main unit RMU explained", "Sectionalizer auto-recloser distribution automation"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="protocols">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">6. Communication Protocols</h2>
+        <span class="tag good">GOOD TO KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="p1"><label for="p1">
+        <p class="item-title">Ye protocols kyun zaroori hain</p>
+        <div class="item-body">
+          <p>SCADA/RTU aur control centre ke beech data transfer hone ke liye ek "common language" chahiye — dono devices ko pata hona chahiye data kis format mein bheja/samjha jayega. Alag-alag manufacturers ke equipment (jaise ek relay Siemens ka, doosra ABB ka) agar same protocol follow karte hain, toh wo aapas mein baat kar sakte hain (interoperability).</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="p2"><label for="p2">
+        <p class="item-title">IEC 61850 — modern standard, most important</p>
+        <div class="item-body">
+          <p>Substation automation ke liye international standard hai, specifically bana hai power system ke liye.</p>
+          <p><strong>Kya problem solve karta hai:</strong> Pehle har manufacturer ka apna proprietary protocol hota tha. IEC 61850 ne ek common standard banaya jisse <strong>interoperability</strong> possible hui — alag-alag vendors ke IEDs ek saath, ek network pe seamlessly kaam kar sakte hain.</p>
+          <ul>
+            <li><strong>IED (Intelligent Electronic Device):</strong> Modern digital relay/device jo protection + monitoring + control sab kar sakta hai ek hi unit mein</li>
+            <li><strong>GOOSE messaging:</strong> IEDs aapas mein directly, bahut fast (milliseconds mein) peer-to-peer communicate kar sakte hain — protection speed ke liye critical hai</li>
+            <li><strong>Sampled Values (SV):</strong> Analog measurements (current/voltage) ko digital form mein real-time share karne ka method</li>
+            <li><strong>Ethernet-based:</strong> Modern Ethernet network pe chalta hai</li>
+          </ul>
+          <p><strong>Interview point:</strong> Ye "future-ready" protocol hai, naye smart substations mein isi pe shift ho raha hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="p3"><label for="p3">
+        <p class="item-title">DNP3 (Distributed Network Protocol)</p>
+        <div class="item-body">
+          <p>Purana lekin abhi bhi widely used protocol hai, especially SCADA master (control centre) aur RTU ke beech communication ke liye. Long-distance, kabhi-kabhi unreliable communication links (radio, telephone lines) ke liye design kiya gaya tha. Master-slave architecture: control centre (master) RTU (slave) se data maangta hai, ya RTU khud "unsolicited" events bhej sakta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="p4"><label for="p4">
+        <p class="item-title">Modbus</p>
+        <div class="item-body">
+          <p>Sabse purana aur simplest industrial protocol hai (originally PLC communication ke liye). Simple master-slave structure, easy to implement, lekin limited features (security, speed IEC 61850 jaisi nahi). Chhote systems ya legacy equipment mein abhi bhi milta hai.</p>
+          <p><strong>Quick comparison:</strong> Modbus (simple, legacy) → DNP3 (robust, wide-area SCADA ke liye popular) → IEC 61850 (modern, fast, substation automation ka current standard)</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>YouTube: "IEC 61850 explained", "GOOSE messaging IEC 61850", "DNP3 protocol tutorial"</li>
+          <li>Bhi touch hoga NPTEL Smart Grid course mein: <a href="https://nptel.ac.in/courses/108107113" target="_blank">nptel.ac.in/courses/108107113</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="scada">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">7. SCADA</h2>
+        <span class="tag imp">IMPORTANT</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="s1"><label for="s1">
+        <p class="item-title">SCADA kya hai (core concept)</p>
+        <div class="item-body">
+          <p>SCADA (Supervisory Control and Data Acquisition) ek system hai jo dur-dur located equipment (substations, feeders, transformers) ko ek central control room se <strong>monitor</strong> aur <strong>control</strong> karne deta hai — bina physically wahan jaaye. Discom ke control room mein baithe operator ko real-time pata chalta hai ki kaunsa breaker open hai, kis feeder pe kitna load hai, kahan voltage low hai — aur wahin se wo remotely commands bhi de sakta hai (jaise breaker open/close karna).</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="s2"><label for="s2">
+        <p class="item-title">SCADA Architecture — 4 main components</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Field Devices / Sensors</strong> — actual equipment substation/feeder pe (CT/PT, breakers, isolators). Raw data generate karte hain (voltage, current, breaker status ON/OFF).</li>
+            <li><strong>RTU (Remote Terminal Unit)</strong> — chhota computer/device substation pe laga hota hai. Field devices se signals leta hai (analog+digital), digitize karta hai, communication network ke through control centre ko bhejta hai. Commands bhi receive karta hai aur physical equipment tak execute karwata hai.</li>
+            <li><strong>Communication Network</strong> — RTU aur control centre ke beech data transfer ka medium: fiber optic, microwave, PLCC, ya leased telecom lines. Isi pe protocols chalte hain (IEC 61850, DNP3).</li>
+            <li><strong>MTU (Master Terminal Unit) / Control Centre</strong> — central computer system jahan saare RTUs se data collect hota hai. Yahan <strong>HMI (Human Machine Interface)</strong> hai (operator dashboard, single line diagrams), data historian database mein store hota hai, aur alarms generate hote hain.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="s3"><label for="s3">
+        <p class="item-title">SCADA ka real kaam (functions)</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Monitoring:</strong> Real-time voltage, current, power, breaker status dekhna</li>
+            <li><strong>Control:</strong> Remote se breaker open/close karna</li>
+            <li><strong>Alarming:</strong> Fault hone pe turant alert</li>
+            <li><strong>Data Logging:</strong> Historical data store hona</li>
+            <li><strong>Trending:</strong> Load curves, voltage trends dekhna time ke saath</li>
+          </ul>
+          <p><strong>Interview-relevant point:</strong> SCADA sirf "dekhne" ka system nahi hai — iska real value hai fast fault detection aur remote control, jisse restoration time drastically kam hota hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>NPTEL — "Introduction to Smart Grid" (IIT Roorkee): <a href="https://onlinecourses.nptel.ac.in/noc20_ee65/preview" target="_blank">onlinecourses.nptel.ac.in/noc20_ee65</a></li>
+          <li>YouTube: "SCADA architecture explained", "RTU MTU HMI basics"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="gis">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">8. GIS</h2>
+        <span class="tag good">GOOD TO KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="g1"><label for="g1">
+        <p class="item-title">GIS kya hai power distribution mein</p>
+        <div class="item-body">
+          <p>GIS ek software system hai jo discom ke poore network ko <strong>geographically (map pe)</strong> represent karta hai — har transformer, feeder, pole, cable, consumer ka exact physical location aur unke aapas ke connections ek digital map pe available hote hain (Google Maps jaisa, but power assets ke saath).</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="g2"><label for="g2">
+        <p class="item-title">Kyun zaroori hai — real problems jo ye solve karta hai</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Asset Mapping &amp; Inventory:</strong> Kitne transformers hain, kahan hain, kaunsi cable kis route se ja rahi hai — bina GIS ke ye info purane paper records/Excel mein hoti thi.</li>
+            <li><strong>Consumer Indexing:</strong> Har consumer ko unke exact location aur specific transformer/feeder se link karna — pata chalta hai "agar ye transformer fail ho toh exactly kaunse consumers affected honge."</li>
+            <li><strong>Fault Location Integration:</strong> Jab SCADA/OMS ko fault ka pata chalta hai, GIS turant batata hai ye kis geographic area ko affect karega, field crew ko navigate karne mein madad karta hai.</li>
+            <li><strong>Network Planning:</strong> Naya connection/transformer lagane ke liye planners existing infrastructure aur load density dekh sakte hain.</li>
+            <li><strong>Underground Cable Mapping:</strong> Delhi mein zyada tar underground cables hain, isliye GIS bahut critical hai — digging se pehle check karna zaroori hota hai taaki live cable damage na ho.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="g3"><label for="g3">
+        <p class="item-title">GIS + SCADA + DMS integration</p>
+        <div class="item-body">
+          <p>Modern ADMS (jaisa TPDDL ka hai) mein GIS ek base layer ki tarah kaam karta hai — SCADA ka real-time data aur DMS ke analysis results, GIS ke geographic map pe overlay hote hain. Operator ko sirf "electrical" view nahi milta, balki "geographic + electrical" dono ka combined view milta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>TPDDL GIS implementation case study: <a href="https://peer.gbci.org/sites/default/files/resources/Tata-Power-DDL_PEER-Case-Study_0.pdf" target="_blank">PEER Case Study PDF</a></li>
+          <li>YouTube: "GIS in power distribution", "GIS utility mapping electrical network"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="smartgrid">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">9. Smart Grid — DMS + OMS (poora integrated concept)</h2>
+        <span class="tag imp">IMPORTANT</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="sg1"><label for="sg1">
+        <p class="item-title">Smart Grid ka basic idea</p>
+        <div class="item-body">
+          <p>Traditional grid mein power sirf <strong>one-way</strong> flow karta hai (utility → consumer) aur monitoring bahut limited hoti hai. Smart Grid isko <strong>two-way communication</strong> aur <strong>digital intelligence</strong> add karke upgrade karta hai — data dono directions mein flow hota hai (consumer se bhi utility ko data milta hai, jaise smart meters se), aur system khud-ba-khud smart decisions le sakta hai.</p>
+          <p>Smart Grid ek umbrella concept hai jiske andar SCADA, DMS, OMS, AMI, GIS — sab integrate hoke kaam karte hain. TPDDL ka <strong>ADMS (Advanced Distribution Management System)</strong> exactly yehi hai — inn sabko ek platform pe jodta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sg2"><label for="sg2">
+        <p class="item-title">DMS (Distribution Management System) — core purpose</p>
+        <div class="item-body">
+          <p>SCADA sirf <strong>data dikhata</strong> hai (voltage, current, breaker status) aur basic remote control deta hai. DMS ek layer aage jaata hai — ye <strong>intelligent decisions</strong> leta hai us data ke basis pe. Simple bhasha mein: SCADA aankhein hain, DMS dimaag hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sg3"><label for="sg3">
+        <p class="item-title">DMS Key Functions</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Network Connectivity/Topology Model:</strong> Live digital model poore network ka — kaunsa switch open/closed, kaunsa feeder kis transformer ko power de raha hai. Real-time update hota hai switching operations pe.</li>
+            <li><strong>State Estimation:</strong> Available data (kuch measurement points se) use karke poore network ki state estimate karta hai mathematical algorithms se, jahan direct measurement nahi hai.</li>
+            <li><strong>Load Flow Analysis (real-time):</strong> Continuously calculate karta hai kaunse feeder pe kitna load hai, overload risk kahan hai.</li>
+            <li><strong>Volt-VAR Optimization (VVO):</strong> Voltage ko acceptable band mein rakhna, reactive power (VAR) capacitor banks ke through optimize karna — losses kam, equipment life badhti hai.</li>
+            <li><strong>Switching Order Management:</strong> Maintenance ke liye best switching sequence suggest karta hai, minimum consumers affected hon.</li>
+            <li><strong>Load Balancing between feeders:</strong> Overloaded feeder se under-loaded feeder ko load transfer suggest karta hai via reconfiguration.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sg4"><label for="sg4">
+        <p class="item-title">OMS (Outage Management System) — core purpose</p>
+        <div class="item-body">
+          <p>Jab power cut/fault hota hai, OMS ka kaam hai us outage ko jaldi se jaldi detect, locate, aur resolve karwana — with minimum manual effort.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sg5"><label for="sg5">
+        <p class="item-title">OMS Key Functions</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Outage Detection:</strong> SCADA-based (breaker/recloser trip signal) + Customer-based (complaint calls, call centre integration)</li>
+            <li><strong>Outage Prediction/Inference:</strong> Agar bahut saare customers ek hi area se complaint kar rahe hain, OMS pattern dekhke samajh jaata hai ye ek common upstream fault hai (jaise DT fail hua), na ki individual house problems.</li>
+            <li><strong>Crew Dispatch Management:</strong> Nearest available repair team ko automatically notify karta hai fault location ke saath (GIS integration se navigation).</li>
+            <li><strong>ETR (Estimated Time of Restoration):</strong> Historical data aur fault type ke basis pe restoration time estimate.</li>
+            <li><strong>Restoration Verification:</strong> Fix hone ke baad supply confirm karta hai (SCADA/customer feedback se) aur record close karta hai.</li>
+            <li><strong>Outage Analytics/Reporting:</strong> Feeder-wise fault frequency data — reliability indices (SAIDI/SAIFI) calculate hote hain, regulator ko report karne ke liye.</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="sg6"><label for="sg6">
+        <p class="item-title">Sab kaise saath mein kaam karta hai (real example)</p>
+        <div class="item-body">
+          <p>Fault hota hai feeder pe → SCADA se signal aata hai breaker trip hua → OMS ko pata chalta hai kaunsa area affected hai (topology se) → Customer calls bhi OMS mein aake confirm karti hain → DMS suggest karta hai alternate switching se kitne consumers ko turant restore kiya ja sakta hai (ring main system ka fayda yahin milta hai) → Operator DMS ki suggestion follow karke switching karta hai → OMS restoration progress track karta hai → Field team ko sirf actual faulty section fix karni hoti hai.</p>
+          <p>Ye poora integration hi "Smart Grid" ban jaata hai — TPDDL ka ADMS bilkul yehi karta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>NPTEL — "Smart Grid: Basics to Advanced Technologies" (IIT Roorkee, Prof. N.P. Padhy &amp; Prof. Premalata Jena): <a href="https://nptel.ac.in/courses/108107113" target="_blank">nptel.ac.in/courses/108107113</a> — <em>main resource, sab cover hota hai isme</em></li>
+          <li>YouTube: "Distribution Management System DMS explained", "Outage Management System explained"</li>
+          <li>TPDDL real case study (ADMS/SCADA journey): <a href="https://peer.gbci.org/sites/default/files/resources/Tata-Power-DDL_PEER-Case-Study_0.pdf" target="_blank">PEER Case Study PDF</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="ami">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">10. Smart Metering / AMI</h2>
+        <span class="tag imp">IMPORTANT</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="a1"><label for="a1">
+        <p class="item-title">AMI (Advanced Metering Infrastructure) kya hai</p>
+        <div class="item-body">
+          <p>Traditional meter sirf ek mechanical/digital number dikhata tha jo koi manually aake padhta tha mahine mein ek baar. AMI is process ko fully digital aur automatic banata hai — smart meters khud data bhejte hain utility ko, bina kisi manual reading ke.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="a2"><label for="a2">
+        <p class="item-title">AMI ke 3 core components</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Smart Meter:</strong> Consumption (kWh) ke saath voltage, load profile, power quality events, tampering alerts bhi record karta hai. Two-way communication capable.</li>
+            <li><strong>Communication Network:</strong> RF Mesh, GPRS/cellular, PLC, ya fiber — depending on area aur density</li>
+            <li><strong>MDM (Meter Data Management System) / Head-End System:</strong> Central system jahan saare meters se data collect/store/process hota hai — billing, DMS, OMS sab isi data ko use karte hain</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="a3"><label for="a3">
+        <p class="item-title">AMI ke real fayde</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Remote Meter Reading</strong> — manual reading ki zaroorat khatam</li>
+            <li><strong>Theft/Tampering Detection</strong> — smart meter khud alert bhej deta hai (AT&amp;C losses kam karne mein directly help karta hai)</li>
+            <li><strong>Remote Disconnect/Reconnect</strong> — non-payment case mein field mein jaaye bina hi</li>
+            <li><strong>Outage Detection (Last Gasp signal)</strong> — power jaane pe meter turant signal bhejta hai, OMS ko precisely pata chal jaata hai bina customer call ke</li>
+            <li><strong>Load Profiling &amp; Time-of-Use (ToU) Billing</strong> — different time slots pe alag tariff (peak/off-peak), demand response ke liye zaroori</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="a4"><label for="a4">
+        <p class="item-title">Automated Demand Response (ADR) — TPDDL ki specialty</p>
+        <div class="item-body">
+          <p>Jab grid pe peak load ka pressure ho (jaise garmi mein AC load bahut zyada), utility bade consumers (industrial/commercial) ko signal bhej sakti hai apna load thoda kam karne ke liye, in exchange incentive milta hai. AMI ye poora communication aur measurement possible banata hai — pehle manually/phone calls se hota tha, ab automated system se real-time ho sakta hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="a5"><label for="a5">
+        <p class="item-title">Data Analytics angle</p>
+        <div class="item-body">
+          <p>AMI se itna zyada granular data aata hai (har 15 min/30 min ka consumption data, lakhon meters se) ki isse <strong>load forecasting</strong>, <strong>loss detection</strong> (technical vs commercial losses alag karna), aur <strong>consumer behavior analysis</strong> possible hota hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>NPTEL — "Smart Grid: Basics to Advanced Technologies": <a href="https://nptel.ac.in/courses/108107113" target="_blank">nptel.ac.in/courses/108107113</a></li>
+          <li>SWAYAM/NPTEL — "Big Data Analytics for Smart Grid": <a href="https://onlinecourses.swayam2.ac.in/arp19_ap60/preview" target="_blank">onlinecourses.swayam2.ac.in/arp19_ap60</a> (check nptel.ac.in for latest active run)</li>
+          <li>YouTube: "Smart meter AMI architecture explained"</li>
+          <li>TPDDL AT&amp;C loss reduction — search "TPDDL AT&amp;C loss reduction case study"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="extras">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">11. Extra / Supporting Topics</h2>
+        <span class="tag good">GOOD TO KNOW</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+
+      <div class="item">
+        <input type="checkbox" id="e1"><label for="e1">
+        <p class="item-title">Power Factor &amp; Capacitor Banks</p>
+        <div class="item-body">
+          <p>Power Factor (PF) = Real Power / Apparent Power (cos φ). Ideal PF 1 hai (unity), matlab saari power useful kaam kar rahi hai. Real life mein inductive loads (motors, transformers) ki wajah se PF 1 se kam hota hai — current zyada draw hoti hai same real power ke liye.</p>
+          <p><strong>Low PF ka nuksan:</strong> Zyada current flow hone se losses badhte hain (I²R), cables/transformers ki capacity waste hoti hai. Isi liye discom low PF pe penalty lagata hai bade consumers ko, aur high PF pe incentive/rebate deta hai.</p>
+          <p><strong>Capacitor Banks:</strong> Reactive power supply karke PF ko improve karte hain — inductive load ki reactive power demand ko locally hi capacitor se supply kar dete hain, isliye grid se utni reactive power kheenchni nahi padti, aur overall current draw kam ho jaata hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="e2"><label for="e2">
+        <p class="item-title">Fault Analysis Basics</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Symmetrical Fault:</strong> Teeno phases equally involved (three-phase fault) — rare hota hai lekin sabse severe hota hai</li>
+            <li><strong>Unsymmetrical Fault:</strong> Single line-to-ground, line-to-line, double line-to-ground — ye zyada common hote hain real life mein</li>
+            <li><strong>Per-Unit System:</strong> Calculations ko simplify karne ke liye actual values (volts, amps) ko ek common base ke against normalize karte hain — deep calculation abhi zaroori nahi, bas concept pata ho ki kyun use karte hain</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="e3"><label for="e3">
+        <p class="item-title">Renewable/DG Integration</p>
+        <div class="item-body">
+          <ul>
+            <li>Rooftop solar <strong>Net Metering</strong> — Delhi mein consumers apni chhat pe solar laga sakte hain, extra generated power grid ko wapas bhej sakte hain, aur unka bill us hisaab se adjust hota hai</li>
+            <li>Distributed Generation (DG) grid pe impact — reverse power flow ka concept (traditional grid one-way design hota tha, ab consumer khud bhi generate karke grid ko de sakta hai, isse protection settings aur planning dono affect hote hain)</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="e4"><label for="e4">
+        <p class="item-title">EV Charging Infrastructure</p>
+        <div class="item-body">
+          <p>TPDDL apne area mein EV charging stations install kar raha hai — ye unka current strategic focus area hai (company website pe recent initiatives mein milega). High EV adoption se peak load pattern change hota hai, isliye discoms ke liye planning-relevant topic hai.</p>
+        </div>
+        </label>
+      </div>
+
+      <div class="item">
+        <input type="checkbox" id="e5"><label for="e5">
+        <p class="item-title">Regulatory Basics</p>
+        <div class="item-body">
+          <ul>
+            <li><strong>Electricity Act 2003:</strong> India mein power sector ko regulate karne wala main law — generation, transmission, distribution, aur trading ko separate licensing ke through regulate karta hai, aur open access jaisi cheezein introduce ki</li>
+            <li><strong>DERC (Delhi Electricity Regulatory Commission):</strong> Delhi ka specific regulator — tariff decide karta hai, discoms ko license deta hai, consumer complaints handle karta hai</li>
+            <li><strong>Open Access:</strong> Bade consumers ko option deta hai ki wo discom ke alawa doosre source (jaise renewable IPP) se bhi power le sakein, discom ki grid use karke (wheeling charges de kar)</li>
+          </ul>
+        </div>
+        </label>
+      </div>
+
+      <div class="resource-box">
+        <h4>Resources</h4>
+        <ul>
+          <li>College notes revise karo — PF/Capacitor Banks, Fault Analysis (undergrad level concepts)</li>
+          <li>DERC website: <a href="https://www.derc.gov.in" target="_blank">derc.gov.in</a> (tariff orders mein practical context)</li>
+          <li>Wikipedia: "Electricity Act 2003" — quick summary ke liye kaafi hai</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="terms">
+    <div class="section-head" onclick="toggleSection(this)">
+      <div class="section-title">
+        <span class="chevron">▶</span>
+        <h2 class="stitle">12. Terminology Cheat-Sheet</h2>
+        <span class="tag must">ROZ USE HOGA</span>
+      </div>
+      <span class="count"></span>
+    </div>
+    <div class="section-body">
+      <table class="terms">
+        <tr><th>Term</th><th>Matlab</th></tr>
+        <tr><td>AT&amp;C Loss</td><td>Aggregate Technical &amp; Commercial loss — discom ki performance ka main metric</td></tr>
+        <tr><td>Connected Load</td><td>Consumer ke saare equipment ka total rated load</td></tr>
+        <tr><td>Sanctioned/Contract Demand</td><td>Discom ne jo maximum demand approve ki hai</td></tr>
+        <tr><td>DT</td><td>Distribution Transformer</td></tr>
+        <tr><td>RMU</td><td>Ring Main Unit</td></tr>
+        <tr><td>SAIDI/SAIFI</td><td>Reliability indices — average outage duration/frequency per consumer</td></tr>
+        <tr><td>kWh vs kVAh</td><td>Real energy vs apparent energy billing unit</td></tr>
+        <tr><td>DISCOM</td><td>Distribution Company (electricity distribution utility)</td></tr>
+        <tr><td>HT / EHV</td><td>High Tension / Extra High Voltage</td></tr>
+        <tr><td>SCADA</td><td>Supervisory Control and Data Acquisition</td></tr>
+        <tr><td>DERC</td><td>Delhi Electricity Regulatory Commission</td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>tpddl_prep_checklist.html · progress auto-saves only for this browser session</footer>
+<button class="reset-btn" onclick="resetAll()">Reset all checkboxes</button>
+
+<script>
+function toggleSection(headEl){
+  const section = headEl.closest('.section');
+  section.classList.toggle('open');
+}
+
+function updateProgress(){
+  const boxes = document.querySelectorAll('.item input[type=checkbox]');
+  const checked = document.querySelectorAll('.item input[type=checkbox]:checked');
+  const total = boxes.length;
+  const done = checked.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done + ' / ' + total + ' done';
+
+  // per-section counts
+  document.querySelectorAll('.section').forEach(sec=>{
+    const secBoxes = sec.querySelectorAll('.item input[type=checkbox]');
+    const secChecked = sec.querySelectorAll('.item input[type=checkbox]:checked');
+    const countEl = sec.querySelector('.count');
+    if(countEl && secBoxes.length){
+      countEl.textContent = secChecked.length + '/' + secBoxes.length;
+    }
+  });
+}
+
+document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
+  cb.addEventListener('change', ()=>{
+    cb.closest('.item').classList.toggle('checked', cb.checked);
+    updateProgress();
+  });
+});
+
+function resetAll(){
+  document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
+    cb.checked = false;
+    cb.closest('.item').classList.remove('checked');
+  });
+  updateProgress();
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>
