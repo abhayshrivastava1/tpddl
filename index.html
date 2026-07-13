@@ -28,7 +28,7 @@
     padding-bottom:80px;
   }
   header{
-    padding:38px 24px 22px;
+    padding:12px 20px;
     border-bottom:1px solid var(--panel-border);
     background:
       repeating-linear-gradient(0deg, rgba(94,198,194,0.04) 0px, rgba(94,198,194,0.04) 1px, transparent 1px, transparent 32px),
@@ -38,12 +38,12 @@
     z-index:20;
     backdrop-filter: blur(6px);
   }
-  header .eyebrow{
+  header .mini-label{
     font-family:var(--mono);
     font-size:12px;
-    letter-spacing:2px;
     color:var(--accent2);
-    text-transform:uppercase;
+    white-space:nowrap;
+    letter-spacing:0.5px;
   }
   header h1{
     margin:6px 0 4px;
@@ -269,10 +269,8 @@
 <body>
 
 <header>
-  <div class="eyebrow">DISCOM · TECHNICAL TEAM PREP</div>
-  <h1>TPDDL Joining Checklist</h1>
-  <p class="sub">Har topic ke andar detailed notes + resources hain. Padhne ke baad checkbox tick karo — progress upar track hoga.</p>
   <div class="progress-wrap">
+    <span class="mini-label">TPDDL Prep</span>
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     <div id="progress-label">0 / 0 done</div>
   </div>
