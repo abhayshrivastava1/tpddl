@@ -1232,7 +1232,7 @@
 
 </main>
 
-<footer>tpddl_prep_checklist.html · progress auto-saves only for this browser session</footer>
+<footer>tpddl_prep_checklist.html · progress auto-saves permanently in this browser (same device + browser)</footer>
 <button class="reset-btn" onclick="resetAll()">Reset all checkboxes</button>
 
 <script>
@@ -1261,21 +1261,53 @@ function updateProgress(){
   });
 }
 
+const STORAGE_KEY = 'tpddl_checklist_progress';
+
+function loadProgress(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
+      if(saved[cb.id]){
+        cb.checked = true;
+        cb.closest('.item').classList.add('checked');
+      }
+    });
+  }catch(e){
+    console.error('Could not load saved progress', e);
+  }
+}
+
+function saveProgress(){
+  try{
+    const state = {};
+    document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
+      if(cb.checked) state[cb.id] = true;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error('Could not save progress', e);
+  }
+}
+
 document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
   cb.addEventListener('change', ()=>{
     cb.closest('.item').classList.toggle('checked', cb.checked);
     updateProgress();
+    saveProgress();
   });
 });
 
 function resetAll(){
+  if(!confirm('Sab checkboxes reset kar dein? Ye undo nahi ho sakta.')) return;
   document.querySelectorAll('.item input[type=checkbox]').forEach(cb=>{
     cb.checked = false;
     cb.closest('.item').classList.remove('checked');
   });
+  localStorage.removeItem(STORAGE_KEY);
   updateProgress();
 }
 
+loadProgress();
 updateProgress();
 </script>
 
